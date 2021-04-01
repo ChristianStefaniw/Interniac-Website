@@ -6,29 +6,21 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        {% include 'boilerplate/bootstrap.html' %}
 
         <link rel="stylesheet" href="{% static "css/style.css" %}"/>
-
 
         <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
 
 
         <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-                crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-                crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 
         <title>Interniac</title>
     </head>
     <body>
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -64,20 +56,23 @@
                 </div>
             </nav>
         </section>
-        <a class="mb-4" href="{{ request.META.HTTP_REFERER }}">
+        <a class="mb-4 ml-3" href="{{ request.META.HTTP_REFERER }}">
             <i class="fas fa-arrow-circle-left fa-2x"></i>
         </a>
         {% if user.is_employer or user.is_superuser %}
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+            <div class="container">
+                    <form method="post" id="create-listing">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary mt-3 mb-5">Submit</button>
+                    </form>
+            </div>
+
         {% else %}
             <h1 class="alert-danger text-center">You must be an employer to access this page</h1>
         {% endif %}
 
-        <script src="{% static 'js/create-intern-listing.js' %}"></script>
+        <script src="{% static 'js/script.js' %}"></script>
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     </body>
 </html>

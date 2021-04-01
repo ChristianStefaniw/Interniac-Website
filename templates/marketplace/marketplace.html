@@ -6,27 +6,22 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        {% include 'boilerplate/bootstrap.html' %}
 
         <link rel="stylesheet" href="{% static "css/style.css" %}"/>
-        <link rel="stylesheet" href="{% static "css/marketplace.css" %}"/>
 
 
         <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 
         <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-                crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 
         <title>Interniac</title>
     </head>
     <body>
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -63,7 +58,7 @@
             </nav>
         </section>
 
-        <div class="container-fluid">
+        <div id="market-container">
             <section>
                 <div class="row justify-content-start mb-2">
                     {% if user.is_employer or user.is_superuser %}
@@ -75,7 +70,7 @@
             </section>
             <section>
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-md-4">
                         <button class="btn btn-outline-primary mb-4" style="padding: 5px" id="show-hide-btn" onclick="showFilters()">Hide Filters</button>
                         <div id="filters-container" style="display: block;">
                             {% include 'marketplace/filters.html' %}
@@ -83,13 +78,16 @@
                     </div>
                     <div class="col-md-8">
                         {% include 'marketplace/search-bar.html' %}
-                        {% include 'marketplace/listings.html' %}
+                        <div id="listings">
+                            {% include 'marketplace/listings.html' %}
+                        </div>
+
                     </div>
 
                 </div>
 
             </section>
         </div>
-        <script src="{% static 'js/marketplace.js' %}"></script>
+        <script src="{% static 'js/script.js' %}"></script>
     </body>
 </html>

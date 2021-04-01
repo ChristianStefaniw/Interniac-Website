@@ -5,23 +5,15 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-        <link rel="stylesheet" href="{% static "css/style.css" %}"/>
-
-
-        <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
-
-
-        <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
         {% include 'boilerplate/bootstrap.html' %}
-
-
+        <link rel="stylesheet" href="{% static "css/style.css" %}"/>
+        <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
+        <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
         <title>Interniac</title>
     </head>
     <body>
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -59,19 +51,24 @@
         </section>
 
         <section class="mt-5">
-            {% for career in object_list %}
-                <div class="mb-5">
-                    {% autoescape off %}
-                        {{ career.content }}
-                    {% endautoescape %}
-                    <div>
-                        <a class="danger-btn" href="{% url 'delete_career' career_id=career.id %}">Delete</a>
-                        <a class="neutral-btn" href="{% url 'edit_career' pk=career.id %}">Edit</a>
+            <div class="container">
+                {% for career in object_list %}
+                    <div class="mb-5">
+                        {% autoescape off %}
+                            {{ career.content }}
+                        {% endautoescape %}
+                        {% if user.is_superuser or user.is_staff %}
+                            <div>
+                                <a class="danger-btn" href="{% url 'delete_career' career_id=career.id %}">Delete</a>
+                                <a class="neutral-btn" href="{% url 'edit_career' pk=career.id %}">Edit</a>
+                            </div>
+                        {% endif %}
+
                     </div>
 
-                </div>
+                {% endfor %}
+            </div>
 
-            {% endfor %}
         </section>
 
         <section>

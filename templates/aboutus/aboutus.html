@@ -6,23 +6,22 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        {% include 'boilerplate/bootstrap.html' %}
 
         <link rel="stylesheet" href="{% static "css/style.css" %}"/>
-        <link rel="stylesheet" href="{% static "css/about.css" %}"/>
-        <link rel="stylesheet" href="{% static "css/decorations.css" %}"/>
 
 
         <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
 
 
         <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
-        {% include 'boilerplate/bootstrap.html' %}
+
 
         <title>Interniac</title>
     </head>
     <body>
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -60,31 +59,34 @@
         </section>
 
         <div class="pb-5">
+            <img width="5%" class="position-absolute send-back spin" src="{% static 'assets/decorations/blob-secondary.svg' %}" alt=""/>
             <div class="container">
                 <section id="mission">
-                    <div class="jumbotron inner-shadow bg-white">
+                    <div class="jumbotron inner-shadow bg-transparent" style="padding: 5rem;">
                         <div class="row">
-                            <!--<div class="circle-decoration" style="background-color: #7c3d7c; z-index: 0"></div>-->
                             <div class="col-md-7">
                                 <h1 class="display-4">Our Mission</h1>
                                 <p style="font-size: 1.2rem">Interniac is a marketplace that supports high schoolers and
                                     empowers businesses in hiring bright
                                     students.</p>
+                                <img width="20%" class="position-absolute spin" src="{% static 'assets/decorations/blob-bg-primary.svg' %}" alt=""/>
                             </div>
                             <div class="col-md-5 ">
                                 <img class="float-right" width="100%" src="{% static 'assets/images/work-chat.svg' %}"
                                      alt="work chat"/>
-                                <!--<div class="circle-decoration" style="background-color: #4ee574; z-index: 1; position: absolute;"></div>-->
                             </div>
                         </div>
-                        <!--<div class="circle-decoration" style="background-color: #3e3ef6; z-index: 0"></div>-->
                     </div>
                 </section>
+                <div class="w-100 text-right">
+                    <img width="5%" class="position-absolute send-back spin" src="{% static 'assets/decorations/blob-highlight.svg' %}" alt=""/>
+                </div>
+
+
 
                 <div class="content-gap"></div>
 
                 <section id="offers" class="inner-shadow p-4">
-                    <!--<div class="circle-decoration" style="background-color: #e08b40;"></div>-->
                     <div class="outer-shadow p-4">
                         <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
                             <li class="nav-item m-auto">
@@ -100,7 +102,6 @@
                                    aria-selected="false">
                                     Employer benefits
                                 </a>
-                                <!--<div class="circle-decoration" style="background-color: turquoise;"></div>-->
                             </li>
                         </ul>
                         <div class="tab-content" id="pills-tabContent">
@@ -133,16 +134,22 @@
 
                             </div>
                         </div>
+                        <img width="5%" class="position-absolute send-back spin" src="{% static 'assets/decorations/blob-primary.svg' %}" alt=""/>
                     </div>
 
                 </section>
             </div>
+
         </div>
+
         <div class="container">
 
 
             <section id="the-team" style="margin-top: 7rem">
                 <div class="mt-5">
+                    <div class="w-100 text-right">
+                        <img width="5%" class="position-absolute send-back spin" src="{% static 'assets/decorations/blob-secondary.svg' %}" alt=""/>
+                    </div>
                     <h1>Founders</h1>
                     <div class="row">
                         <div class="col-lg-6">
@@ -152,7 +159,7 @@
                                                            class="rounded-circle img-thumbnail" alt="profile-image"></div>
                                 <div class="mt-2">
                                     <h4 class="text-left mb-0">Aria Parekh</h4>
-                                    <p class="text-muted text-left">Founder</p>
+                                    <p class="secondary-color text-left">Founder</p>
                                 </div>
                                 <p class="text-left text-muted lh-1">Aria Parekh is a sophomore at John Champe High
                                     School. She loves to draw, play the piano, read, watch Friends, and do any water-related
@@ -168,7 +175,7 @@
                                                            class="rounded-circle img-thumbnail" alt="profile-image"></div>
                                 <div class="mt-2">
                                     <h4 class="text-left mb-0">Purva Shah</h4>
-                                    <p class="text-muted text-left">Founder</p>
+                                    <p class="secondary-color text-left">Founder</p>
                                 </div>
                                 <!--<div class="circle-decoration" style="background-color: #9ade6d"></div>-->
                                 <p class="text-left text-muted lh-1">Purva Shah is a high school senior from Tampa, Florida.
@@ -190,7 +197,7 @@
                                                            class="rounded-circle img-thumbnail" alt="profile-image"></div>
                                 <div class="mt-2">
                                     <h4 class="text-left mb-0">Yash Vardhan</h4>
-                                    <p class="text-muted text-left">Founder</p>
+                                    <p class="secondary-color text-left">Founder</p>
                                 </div>
                                 <p class="text-left text-muted lh-1">Yash Vardhan is a Senior at Seminole High School in
                                     Orlando,
@@ -217,7 +224,7 @@
                                 <div class="mt-2">
                                     <!--<div class="circle-decoration" style="background-color: #4075e0"></div>-->
                                     <h4 class="text-left mb-0">Rahi Shah</h4>
-                                    <p class="text-muted text-left">Founder</p>
+                                    <p class="secondary-color text-left">Founder</p>
                                 </div>
                                 <p class="text-left text-muted lh-1">Rahi Shah is a junior at Rochester High School in Rochester
                                     Hills, Michigan.
@@ -242,7 +249,7 @@
                                                            class="rounded-circle img-thumbnail" alt="profile-image"></div>
                                 <div class="mt-2">
                                     <h4 class="text-left mb-0">Omkar Ghodke</h4>
-                                    <p class="text-muted text-left">Team Member</p>
+                                    <p class="secondary-color text-left">Team Member</p>
                                 </div>
                                 <p class="text-left text-muted lh-1">Omkar Ghodke is a junior at Rochester High School. Omkar
                                     enjoys
@@ -260,7 +267,7 @@
                                                            class="rounded-circle img-thumbnail" alt="profile-image"></div>
                                 <div class="mt-2">
                                     <h4 class="text-left mb-0">Kashvi Patel</h4>
-                                    <p class="text-muted text-left">Team Member</p>
+                                    <p class="secondary-color text-left">Team Member</p>
                                 </div>
                                 <!--<div class="circle-decoration" style="background-color: #f3b94e"></div>-->
                                 <p class="text-left text-muted lh-1">Kashvi Patel is a sophomore at Freedom High School. She
@@ -282,7 +289,7 @@
                                                                class="rounded-circle img-thumbnail" alt="profile-image"></div>
                                     <div class="mt-2">
                                         <h4 class="text-left mb-0">Dhruv Dighrasker</h4>
-                                        <p class="text-muted text-left">Team Member</p>
+                                        <p class="secondary-color text-left">Team Member</p>
                                     </div>
                                     <p class="text-left text-muted lh-1">Dhruv Dighrasker is a junior in Troy, Michigan, and an
                                         interest of his is
@@ -303,7 +310,7 @@
                                                            class="rounded-circle img-thumbnail" alt="profile-image"></div>
                                 <div class="mt-2">
                                     <h4 class="text-left mb-0">Tvisha Bakshi</h4>
-                                    <p class="text-muted text-left">Team Member</p>
+                                    <p class="secondary-color text-left">Team Member</p>
                                 </div>
                                 <!--<div class="circle-decoration" style="background-color: #9a9ae0"></div>-->
                                 <p class="text-left text-muted lh-1">Tvisha Bakshi is a sophomore at Lightridge High School.
@@ -326,7 +333,7 @@
                                                            class="rounded-circle img-thumbnail" alt="profile-image"></div>
                                 <div class="mt-2">
                                     <h4 class="text-left mb-0">Manav Gandhi</h4>
-                                    <p class="text-muted text-left">Team Member</p>
+                                    <p class="secondary-color text-left">Team Member</p>
                                 </div>
                                 <p class="text-left text-muted lh-1">Manav Gandhi is a junior at Oakton High school. Looking for
                                     internships during his
@@ -349,7 +356,7 @@
                                 </div>
                                 <div class="mt-2">
                                     <h4 class="text-left mb-0">Megha Thomas</h4>
-                                    <p class="text-muted text-left">Team Member</p>
+                                    <p class="secondary-color text-left">Team Member</p>
                                 </div>
                                 <p class="text-left text-muted lh-1">Megha Thomas is an 11th grader from Annapolis, Maryland.
                                     One of
@@ -364,6 +371,19 @@
                                     student can spend their time to gain work experience and a deeper understanding of a career
                                     that
                                     interests them!</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="pt-2 pb-2">
+                                <div class="thumb-lg">
+                                    <img src="{% static 'assets/images/the_team/christian.png' %}"
+                                         width="100%" class="rounded-circle img-thumbnail" alt="profile-image">
+                                </div>
+                                <div class="mt-2">
+                                    <h4 class="text-left mb-0">Christian Stefaniw</h4>
+                                    <p class="secondary-color text-left">Team Member</p>
+                                </div>
+                                <p class="text-left text-muted lh-1"></p>
                             </div>
                         </div>
                     </div>

@@ -1,51 +1,51 @@
-<div class="mt-5" id="listings">
+<div class="row mt-5">
     {% for listing in object_list %}
-        <div class="listing-card mb-5">
-            <div class="container-fluid mt-3 mb-3">
+        <div class="col-md-4 mb-5">
+            <div class="listing-card">
                 <div class="row mb-4">
                     <div class="col-lg-9">
-                        <h5 class="mb-4">{{ listing.title }}</h5>
-                        <p class="mb-4" style="line-height: 0">{{ listing.company.employer_profile.company_name }}</p>
-                            {% if listing.type == "paid" %}
-                                <p>paid -
-                                    {% if listing.where == 'in-person' %}
-                                        in person
-                                    {% else %}
-                                        virtual
-                                        </p>
-                                    {% endif %}
-                            {% else %}
-                                <p>unpaid -
-                                    {% if listing.where == 'in-person' %}
-                                        in person
-                                    {% else %}
-                                        virtual
-                                        </p>
-                                    {% endif %}
-                            {% endif %}
+                        <h3 class="mb-4 font-weight-bold">{{ listing.title }}</h3>
+                        <h5 class="mb-4 font-weight-bold primary"
+                            style="line-height: 0">{{ listing.company.employer_profile.company_name }}</h5>
+                        {% if listing.type == "Paid" %}
+                            <p><i data-toggle="tooltip" title="paid" class="fas fa-dollar-sign"></i>
+                        {% else %}
+                            unpaid
+                        {% endif %}
+                        -
+                        {% if listing.where == 'in-person' %}
+                            <i data-toggle="tooltip" title="in-person" class="fas fa-building"></i>
+                        {% else %}
+                            <i data-toggle="tooltip" title="virtual" class="fas fa-desktop"></i>
+                        {% endif %}
+                        </p>
                         <p>Date posted: {{ listing.posted }}</p>
                     </div>
                     {% if user.is_student %}
-                    <div class="col-lg-3 text-right">
-                        {% if user in listing.rejections.all %}
-                            <p class="text-danger">Rejected</p>
-                        {% elif user in listing.interview_requests.all %}
-                            <p class="text-success">Interview requested</p>
-                        {% elif listing.application_url %}
-                            <p></p>
-                        {% else %}
-                            {% if listing in user.applications.all %}
-                                <button class="apply-unapply-btn" onclick="unapply({{ listing.id }}, this)">Unapply
-                                </button>
+                        <div class="col-lg-3 text-right">
+                            {% if user in listing.rejections.all %}
+                                <p class="text-danger">Rejected</p>
+                            {% elif user in listing.acceptances.all %}
+                                <p class="text-success">Accepted</p>
+                            {% elif user in listing.interview_requests.all %}
+                                <p class="text-info">Interview requested</p>
+                            {% elif listing.application_url %}
+                                <p></p>
                             {% else %}
-                                <button class="apply-unapply-btn" onclick="apply({{ listing.id }}, this)">Apply</button>
+                                {% if listing in user.applications.all %}
+                                    <button class="apply-unapply-btn" onclick="unapply({{ listing.id }}, this)">
+                                        Unapply
+                                    </button>
+                                {% else %}
+                                    <button class="apply-unapply-btn" onclick="apply({{ listing.id }}, this)">
+                                        Apply
+                                    </button>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                    </div>
-                {% endif %}
+                        </div>
+                    {% endif %}
 
                 </div>
-                <p class="text-muted">{{ listing.description|truncatechars:500 }}</p>
                 <div class="row justify-content-end">
                     <a class="view mr-2" href="{{ listing.get_absolute_url }}">View</a>
                 </div>
@@ -63,7 +63,7 @@
             headers: {
                 'SameSite': 'Lax'
             },
-            url: `apply/${id}`,
+            url: `/applications/apply/${id}`,
             success: function (data) {
                 $(el).replaceWith(data);
             },
@@ -76,7 +76,7 @@
     function unapply(id, el) {
         $.ajax({
             type: 'get',
-            url: `unapply/${id}`,
+            url: `/applications/unapply/${id}`,
             headers: {
                 'SameSite': 'Lax'
             },

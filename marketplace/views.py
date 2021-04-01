@@ -1,6 +1,4 @@
-from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
 from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -8,13 +6,16 @@ from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.decorators import login_required
 
 from .forms import CreateListingForm, Filter
-from .mixins import ModelFormWidgetMixin
 from .models import Listing, Career
+
+
+__all__ = ['Marketplace', 'CreateListing', 'FilterListings', 'ViewListing', 'delete_listing', 'EditListing']
 
 
 class Marketplace(LoginRequiredMixin, ListView):
     login_url = 'login'
     model = Listing
+    ordering = ['-posted']
     template_name = 'marketplace/marketplace.html'
 
     def get_context_data(self, **kwargs):
@@ -44,6 +45,7 @@ class CreateListing(LoginRequiredMixin, CreateView):
 class FilterListings(LoginRequiredMixin, ListView):
     template_name = 'marketplace/listings.html'
     model = Listing
+    queryset = Listing.objects.all().order_by('-posted')
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -51,13 +53,13 @@ class FilterListings(LoginRequiredMixin, ListView):
         params = self.request.GET
         if params.getlist('type'):
             for i in range(len(params.getlist('type'))):
-                query = query | Q(type__startswith=params.getlist('type')[i])
+                query = query & Q(type__startswith=params.getlist('type')[i])
         if params.getlist('where'):
             for i in range(len(params.getlist('where'))):
-                query = query | Q(where__startswith=params.getlist('where')[i])
+                query = query & Q(where__startswith=params.getlist('where')[i])
         if params.getlist('career'):
             for i in range(len(params.getlist('career'))):
-                query = query | Q(career_id=int(params.getlist('career')[i]))
+                query = query & Q(career_id=int(params.getlist('career')[i]))
         if params.get('search'):
             query = query & Q(title__contains=params.get('search'))
         if params.get('company'):
@@ -73,33 +75,7 @@ class ViewListing(LoginRequiredMixin, DetailView):
     template_name = 'marketplace/single-listing.html'
 
 
-@login_required
-def apply(request, listing_id):
-    listing = Listing.objects.get(id=listing_id)
-    listing.applications.add(request.user)
-    redirect_where = request.GET.get('redirect')
-    if redirect_where == 'profile':
-        return redirect(request.user)
-    elif redirect_where == 'success':
-        return render(request, 'success-error/success-applied.html', context={'which': listing})
-    else:
-        return HttpResponse(f'<button class="apply-unapply-btn" onclick="unapply({listing_id}, this)">Unapply</button>')
-
-
-@login_required
-def unapply(request, listing_id):
-    listing = Listing.objects.get(id=listing_id)
-    listing.applications.remove(request.user)
-    redirect_where = request.GET.get('redirect')
-    if redirect_where == 'profile':
-        return redirect('applications')
-    elif redirect_where == 'success':
-        return render(request, 'success-error/success-unapplied.html', context={'which': listing})
-    else:
-        return HttpResponse(f'<button class="apply-unapply-btn" onclick="apply({listing_id}, this)">Apply</button>')
-
-
-@login_required
+@login_required(login_url='login')
 def delete_listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
     if request.user != listing.company:
@@ -110,12 +86,31 @@ def delete_listing(request, listing_id):
     return redirect('listings')
 
 
-class EditListing(LoginRequiredMixin, ModelFormWidgetMixin, UpdateView):
+class EditListing(LoginRequiredMixin, UpdateView):
     model = Listing
     template_name = 'marketplace/edit-listing.html'
     success_url = reverse_lazy('listings')
-    widgets = {
-        'application_deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format="%d %b %Y %H:%M %Z")
-    }
-    fields = ['title', 'type', 'where', 'career', 'new_career', 'time_commitment', 'application_deadline',
-              'description', 'application_url']
+
+    fields = ['title', 'type', 'where', 'career', 'new_career', 'pay', 'time_commitment', 'location',
+              'application_deadline', 'description', 'application_url']
+
+    def form_valid(self, form):
+        if form.cleaned_data['where'] == 'Virtual':
+            if form.cleaned_data['location'] is not '' and form.cleaned_data['location'] is not None:
+                form.add_error('where', 'Virtual internship can\'t have a location')
+        if form.cleaned_data['type'] == 'Unpaid':
+            if form.cleaned_data['pay'] is not '' and form.cleaned_data['pay'] is not None:
+                form.add_error('type', 'Unpaid internship can\'t have a salary')
+
+        if form.cleaned_data['career'] is not None and form.cleaned_data['career'] is not '':
+            pass
+        elif form.cleaned_data['new_career'] is not None and form.cleaned_data['new_career'] is not '':
+            new_career, _ = Career.objects.get_or_create(career=form.cleaned_data['new_career'])
+            listing = form.save(commit=False)
+            listing.career = new_career
+            listing.save()
+
+        if form.is_valid():
+            return super(EditListing, self).form_valid(form)
+        else:
+            return super(EditListing, self).form_invalid(form)

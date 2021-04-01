@@ -1,22 +1,20 @@
 {% load static %}
 
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
-        <link rel="stylesheet" href="{% static 'css/login.css' %}">
-        <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
-
-
-        <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
         {% include 'boilerplate/bootstrap.html' %}
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+        <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
+        <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
         <title>Interniac</title>
     </head>
     <body>
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -52,12 +50,33 @@
                 </div>
             </nav>
         </section>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-        <a href="{% url 'register' %}">Register</a>
-        <a href="{% url 'password_reset' %}">Forgot password?</a>
+        <div class="container-fluid">
+            <div class="row justify-content-around">
+                <div class="col-lg-3">
+                    <form method="post" id="login">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary mt-3" id="login-btn">Login</button>
+                    </form>
+                    <div class="mt-3 mb-5">
+                        <a class="float-left text-success" href="{% url 'register' %}">Register</a>
+                        <a class="float-right text-danger" href="{% url 'password_reset' %}">Forgot password?</a>
+                    </div>
+                    <img width="40%" class="position-absolute send-back spin mt-5" src="{% static 'assets/decorations/blob-bg-primary.svg' %}" alt=""/>
+
+                </div>
+                <div class="col-lg-5">
+                    <div>
+                        <img width="100%" class="img-fluid" src="{% static 'assets/images/login.svg' %}" alt="login image"/>
+                        <div class="w-100 text-right">
+                            <img width="10%" class="position- send-back spin-counter" src="{% static 'assets/decorations/blob-primary.svg' %}" alt=""/>
+                        </div>
+
+                    </div>
+                    <img width="15%" class="position-absolute send-back spin" src="{% static 'assets/decorations/blob-secondary.svg' %}" alt=""/>
+                </div>
+            </div>
+        </div>
+
     </body>
 </html>

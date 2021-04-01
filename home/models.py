@@ -4,13 +4,6 @@ from django.db import models
 from django.dispatch import receiver
 
 
-class EmailSignup(models.Model):
-    email_signup = models.EmailField()
-
-    def __str__(self):
-        return self.email_signup
-
-
 class Event(models.Model):
     datetime = models.DateTimeField()
     name = models.CharField(max_length=50)

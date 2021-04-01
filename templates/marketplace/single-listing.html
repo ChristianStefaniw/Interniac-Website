@@ -5,24 +5,15 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-        <link rel="stylesheet" href="{% static "css/style.css" %}"/>
-        <link rel="stylesheet" href="{% static "css/marketplace.css" %}"/>
-
-
-        <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
-
-        <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
-
         {% include 'boilerplate/bootstrap.html' %}
-
-
+        <link rel="stylesheet" href="{% static "css/style.css" %}"/>
+        <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
+        <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
         <title>Interniac</title>
     </head>
     <body>
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -113,7 +104,7 @@
                     {% endif %}
 
                     <div class="mt-5 mb-5">
-                        {% if user.is_student %}
+                        {% if user.is_student and not object.application_url %}
                             {% if listing in user.applications.all %}
                                 <a class="danger-btn"
                                    href="{% url 'unapply' listing_id=listing.id %}?redirect=success">Unapply</a>
@@ -134,6 +125,6 @@
             </div>
 
         </div>
-        <script src="{% static 'js/marketplace.js' %}"></script>
+        <script src="{% static 'js/script.js' %}"></script>
     </body>
 </html>

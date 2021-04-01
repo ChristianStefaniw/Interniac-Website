@@ -6,15 +6,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        {% include 'boilerplate/bootstrap.html' %}
 
         <link rel="stylesheet" href="{% static "css/style.css" %}"/>
-        <link rel="stylesheet" href="{% static "css/applications.css" %}"/>
 
         <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
 
         <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
-
-        {% include 'boilerplate/bootstrap.html' %}
 
 
         <title>Interniac</title>
@@ -22,7 +20,7 @@
     <body>
 
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -167,24 +165,29 @@
 
                         <div class="col-lg-3">
                             <div class="inner-shadow img-box">
-                                <img class="outer-shadow img-fluid" src="{{ student.profile_picture.url }}"
+                                <img class="outer-shadow img-fluid" src="{{ student.get_profile_pic_url }}"
                                      alt="profile picture"/>
                             </div>
                         </div>
 
                     </div>
+                    {% if student not in listing.acceptances.all and student not in listing.rejections.all %}
+                        <div class="mt-4 mb-5">
+                            <a class="success-btn" onclick="return confirm('Are you sure?');"
+                               href="{% url 'accept' listing_id=listing.id student_id=student.id %}">Accept</a>
 
-                    <div class="mt-5 mb-5">
-                        <a class="success-btn"
-                           href="{% url 'accept' listing_id=listing.id student_id=student.id %}">Accept</a>
+                            <a class="danger-btn ml-3" onclick="return confirm('Are you sure?');"
+                               href="{% url 'reject' listing_id=listing.id student_id=student.id %}">Reject</a>
 
-                        <a class="danger-btn ml-3"
-                           href="{% url 'reject' listing_id=listing.id student_id=student.id %}">Reject</a>
-
-                        <a class="neutral-btn ml-3"
-                           href="{% url 'request_interview' listing_id=listing.id student_id=student.id %}">Request
-                            Interview</a>
-                    </div>
+                            <a class="neutral-btn ml-3" onclick="return confirm('Are you sure?');"
+                               href="{% url 'request_interview' listing_id=listing.id student_id=student.id %}">Request
+                                Interview</a>
+                        </div>
+                    {% elif student in listing.acceptances.all %}
+                        <p class="text-success">Accepted</p>
+                    {% elif student in listing.rejections.all %}
+                        <p class="text-danger">Rejected</p>
+                    {% endif %}
                 </div>
             </div>
         </section>

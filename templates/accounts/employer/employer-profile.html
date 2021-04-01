@@ -3,47 +3,63 @@
 </h1>
 
 <section class="mt-5">
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" id="employer-profile" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row justify-content-around">
             <div class="col-md-2">
                 <img width="100%" style="object-fit: scale-down" class="mb-2" src="{{ user.profile_picture.url }}"
                      alt="profile-picture"/>
-                {{ employer_user_form.profile_picture.label }}
-                {{ employer_user_form.profile_picture }}
-                <div class="mt-5 ml-2 mb-5">
-                    <div class="row">
-                        <a class="neutral-btn mr-4"
-                           href="{% url 'logout' %}?next=/">Logout</a>
-                        <a class="danger-btn"
-                           href="{% url "delete" %}">Delete account</a>
-                    </div>
+                <p>
+                    {{ employer_user_form.profile_picture.label_tag }}
+                    {{ employer_user_form.profile_picture }}
+                </p>
+
+                <div class="mt-4">
+                    <a class="danger-btn"
+                       href="{% url "delete" %}" onclick="return confirm('Are you sure?');">Delete account</a>
+                    <a class="neutral-btn float-right"
+                       href="{% url 'logout' %}?next=/">Logout</a>
                 </div>
             </div>
             <div class="col-md-8">
-                <div class="form-group">
-                    {{ employer_user_form.company_name.label }}
-                    {{ employer_user_form.company_name }}
-                </div>
+                <!--{{ employer_profile_form.as_p }}
+                {{ employer_user_form.as_p }}-->
+                <p>
+                    {{ employer_profile_form.company_name.label_tag }}
+                    {{ employer_profile_form.company_name }}
+                </p>
+
                 <div class="row">
-                    <div class="form-group col-md-6">
-                        {{ employer_user_form.first_name.label }}
-                        {{ employer_user_form.first_name }}
+                    <div class="col-md-6">
+                        <p>
+                            {{ employer_user_form.first_name.label_tag }}
+                            {{ employer_user_form.first_name }}
+                        </p>
+
                     </div>
-                    <div class="form-group col-md-6">
-                        {{ employer_user_form.last_name.label }}
-                        {{ employer_user_form.last_name }}
+                    <div class="col-md-6">
+                        <p>
+                            {{ employer_user_form.last_name.label_tag }}
+                            {{ employer_user_form.last_name }}
+                        </p>
+
                     </div>
                 </div>
-                <div class="form-group">
-                    {{ employer_user_form.email.label }}
-                    {{ employer_user_form.email }}
+                <div>
+                    <p>
+                        {{ employer_user_form.email.label_tag }}
+                        {{ employer_user_form.email }}
+                    </p>
+
                 </div>
-                <div class="form-group">
-                    {{ employer_profile_form.company_website.label }}
-                    {{ employer_profile_form.company_website }}
+                <div>
+                    <p>
+                        {{ employer_profile_form.company_website.label_tag }}
+                        {{ employer_profile_form.company_website }}
+                    </p>
+
                 </div>
-                <button class="btn btn-primary w-100" type="submit">Save</button>
+                <button class="btn btn-primary w-100 save-btn" type="submit">Save</button>
 
                 <div class="row text-center mt-5 mb-5">
                     <div class="col-lg-2 mb-4">

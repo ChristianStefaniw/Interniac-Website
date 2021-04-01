@@ -6,15 +6,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        {% include 'boilerplate/bootstrap.html' %}
 
         <link rel="stylesheet" href="{% static "css/style.css" %}"/>
-        <link rel="stylesheet" href="{% static "css/applications.css" %}"/>
 
         <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
 
         <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
-
-        {% include 'boilerplate/bootstrap.html' %}
 
 
         <title>Interniac</title>
@@ -22,7 +20,7 @@
     <body>
 
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -60,14 +58,21 @@
                 </a>
             </div>
 
-            <div class="row">
+            <div class="row justify-content-around">
                 {% for listing in user.listing.all %}
-                    <div class="col-md-4 mb-5 text-center">
-                        <h4>{{ listing.title }}</h4>
-                        <div>
-                            <a class="success-btn" href="{{ listing.get_absolute_url }}">View</a>
-                            <a class="neutral-btn" href="{% url 'edit_listing' pk=listing.id %}">Edit</a>
-                            <a href="{% url 'delete_listing' listing_id=listing.id %}" class="danger-btn">Delete</a>
+                    <div class="col-md-3 mb-5 mr-2 ml-2 bg-white light-outer-shadow p-5 br-10">
+                        <h4 class="mb-4 font-weight-bold">{{ listing.title }}</h4>
+                        <div class="row text-center">
+                            <div class="col-lg-4">
+                                <a class="success-btn w-100" href="{{ listing.get_absolute_url }}">View</a>
+                            </div>
+                            <div class="col-lg-4">
+                                <a class="neutral-btn w-100" href="{% url 'edit_listing' pk=listing.id %}">Edit</a>
+                            </div>
+                            <div class="col-lg-4">
+                                <a href="{% url 'delete_listing' listing_id=listing.id %}"
+                                   class="danger-btn w-100">Delete</a>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}

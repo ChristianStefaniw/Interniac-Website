@@ -5,9 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from careers.forms import CareerForm
-from .forms import EmailAll
-from .helpers import email_all, Student, Employer, save_career
-from .models import StudentProfile, User, EmployerProfile
+from .helpers import Student, Employer, save_career
 
 
 class Profile(LoginRequiredMixin, TemplateView):
@@ -15,10 +13,7 @@ class Profile(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
 
     def post(self, request, **kwargs):
-        if 'subject' in request.POST and 'body' in request.POST:
-            return email_all(request)
-
-        elif 'hs' in request.POST:
+        if 'hs' in request.POST:
             profile_form, user_form = Student.save_both(request)
             if profile_form or user_form:
                 return super(Profile, self).render_to_response(self.get_context_data(profile_form=profile_form,
@@ -40,6 +35,7 @@ class Profile(LoginRequiredMixin, TemplateView):
 
         if self.request.user.is_student:
             student = Student(self.request)
+
             if kwargs.get('profile_form') and kwargs.get('user_form'):
                 context['student_profile_form'] = kwargs.get('profile_form')
                 context['student_user_form'] = kwargs.get('user_form')
@@ -57,7 +53,6 @@ class Profile(LoginRequiredMixin, TemplateView):
                 context['employer_user_form'] = employer.employer_user()
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            context['form'] = EmailAll()
             context['new_career'] = CareerForm()
 
         return context
@@ -65,15 +60,15 @@ class Profile(LoginRequiredMixin, TemplateView):
 
 class Listings(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/employer/listings.html'
+    login_url = 'login'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_employer:
+            raise PermissionError
+        return super(Listings, self).get(request, args, kwargs)
 
 
-@login_required
+@login_required(login_url='login')
 def delete_user(request):
-    user = User.objects.get(email=request.user.email)
-
-    if user.is_superuser:
-        user.delete()
-        return redirect('login')
-
-    user.delete()
+    request.user.delete()
     return redirect('login')

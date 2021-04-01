@@ -16,7 +16,7 @@ class StudentProfileForm(forms.ModelForm):
             'hs': 'High School Name',
             'hs_addy': 'High School Address',
             'teacher_or_counselor_email': 'Teacher or Counselor Email',
-            'teacher_or_counselor_name': 'Teacher of Counselor Name',
+            'teacher_or_counselor_name': 'Teacher or Counselor Name',
             'awards_achievements': 'Awards and Achievements',
             'work_exp': 'Word Experience',
             'volunteering_exp': 'Volunteering Experience',
@@ -48,8 +48,3 @@ class EmployerUserForm(forms.ModelForm):
             'profile_picture': forms.FileInput
         }
         fields = ['email', 'profile_picture', 'first_name', 'last_name']
-
-
-class EmailAll(forms.Form):
-    subject = forms.CharField(max_length=20)
-    body = forms.CharField(widget=forms.Textarea)

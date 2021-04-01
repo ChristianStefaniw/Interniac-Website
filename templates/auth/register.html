@@ -5,19 +5,16 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{% static "css/register.css" %}"/>
+        {% include 'boilerplate/bootstrap.html' %}
         <link rel="stylesheet" href="{% static "css/style.css" %}"/>
         <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/logo-small-transparent.png' %}"/>
-
-
         <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
-        {% include 'boilerplate/bootstrap.html' %}
         <title>Interniac</title>
     </head>
     <body>
 
         <section id="nav">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img width=200 height="50" src="{% static "assets/images/logos/logo-transparent.png" %}" alt="logo"/>
                 </a>
@@ -59,7 +56,7 @@
                 <div class="row justify-content-between">
                     <div class="col-md-5">
                         <div class="text-center">
-                            <img width="100%" src="{% static 'assets/images/login.svg' %}" alt="welcome"/>
+                            <img width="100%" src="{% static 'assets/images/register.svg' %}" alt="welcome"/>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -68,101 +65,76 @@
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-5 mr-1">
-                                    {% for error in form.first_name.errors %}
-                                        <p class="alert-danger"> {{ error }} </p>
-                                    {% endfor %}
-                                    {{ form.first_name.label_tag }}
-                                    {{ form.first_name }}
+                                    <p>
+                                        {{ form.first_name.label_tag }}
+                                        {{ form.first_name }}
+                                        {{ form.first_name.errors }}
+                                    </p>
                                 </div>
 
                                 <div class="col-md-5 ml-1">
-                                    {% for error in form.last_name.errors %}
-                                        <p class="alert-danger"> {{ error }} </p>
-                                    {% endfor %}
-                                    {{ form.last_name.label_tag }}
-                                    {{ form.last_name }}
+                                    <p>
+                                        {{ form.last_name.label_tag }}
+                                        {{ form.last_name }}
+                                        {{ form.last_name.errors }}
+                                    </p>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-5 mr-1">
-                                    {% for error in form.email.errors %}
-                                        <p class="alert-danger"> {{ error }} </p>
-                                    {% endfor %}
-                                    {{ form.email.label_tag }}
-                                    {{ form.email }}
+                                    <p>
+                                        {{ form.email.label_tag }}
+                                        {{ form.email }}
+                                        {{ form.email.errors }}
+                                    </p>
                                 </div>
                                 <div class="col-md-5 col-md-1">
-                                    {% for error in form.profile_picture.errors %}
-                                        <p class="alert-danger"> {{ error }} </p>
-                                    {% endfor %}
-                                    {{ form.profile_picture.label_tag }}
-                                    {{ form.profile_picture }}
+                                    <p>
+                                        {{ form.profile_picture.label_tag }}
+                                        {{ form.profile_picture }}
+                                        {{ form.profile_picture.errors }}
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-5 mr-1">
-                                    {% for error in form.password1.errors %}
-                                        <p class="alert-danger"> {{ error }} </p>
-                                    {% endfor %}
-                                    {{ form.password1.label_tag }}
-                                    {{ form.password1 }}
+                                    <p>
+                                        {{ form.password1.label_tag }}
+                                        {{ form.password1 }}
+                                        {{ form.password1.errors }}
+
+                                    </p>
                                 </div>
 
                                 <div class="col-md-5 ml-1">
-                                    {% for error in form.password2.errors %}
-                                        <p class="alert-danger"> {{ error }} </p>
-                                    {% endfor %}
-                                    {{ form.password2.label_tag }}
-                                    {{ form.password2 }}
+                                    <p>
+                                        {{ form.password2.label_tag }}
+                                        {{ form.password2 }}
+                                        {{ form.password2.errors }}
+                                    </p>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-5 mr-1">
-                                    <div class="row">
-                                        <div class="col">
-                                            {% for error in form.is_student.errors %}
-                                                <p class="alert-danger"> {{ error }} </p>
-                                            {% endfor %}
-                                            {{ form.is_student.label_tag }}
-                                        </div>
-                                        <div class="col">
-                                            {{ form.is_student }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-5 ml-1">
-                                    <div class="row">
-                                        <div class="col">
-                                            {% for error in form.is_employer.errors %}
-                                                <p class="alert-danger"> {{ error }} </p>
-                                            {% endfor %}
-                                            {{ form.is_employer.label_tag }}
-                                        </div>
-                                        <div class="col">
-                                            {{ form.is_employer }}
-                                        </div>
-                                    </div>
-
+                                    {{ form.student_employer.label_tag }}
+                                    {{ form.student_employer }}
+                                    {{ form.student_employer.errors }}
                                 </div>
                             </div>
-                            <div class="row mt-3" id="company-name">
+                            <div class="row mt-3" id="company-name" style="display: none">
                                 <div class="col-md-5">
-                                    {% for error in form.company_name.errors %}
-                                        <p class="alert-danger"> {{ error }} </p>
-                                    {% endfor %}
                                     {{ form.company_name.label_tag }}
                                     {{ form.company_name }}
+                                    {{ form.company_name.errors }}
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-2 mb-2">Create Account</button>
+                            <button type="submit" class="btn btn-primary mb-2">Create Account</button>
                         </form>
                         <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
                     </div>
                 </div>
             </div>
         </section>
-        <script src="{% static 'js/register.js' %}"></script>
+        <script src="{% static 'js/script.js' %}"></script>
     </body>
 </html>

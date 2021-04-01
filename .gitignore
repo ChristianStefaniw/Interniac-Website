@@ -8,6 +8,8 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+staticfiles/
+media/
 env/
 build/
 develop-eggs/
@@ -105,6 +107,9 @@ ENV/
 *.pyc
 *.db
 *.pid
+
+# misc
+client_secret.json
 
 # Ignore Django Migrations in Development if you are working on team
 
