@@ -122,7 +122,7 @@ class StudentProfile(models.Model):
 
     def archive_acceptance(self, listing_id):
         listing = Listing.objects.get(id=listing_id)
-        listing.student_acceptances.remove(listing)
+        self.user.student_acceptances.remove(listing)
 
     def archive_rejection(self, listing_id):
         listing = Listing.objects.get(id=listing_id)
