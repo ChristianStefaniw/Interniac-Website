@@ -1,7 +1,13 @@
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 import django_heroku
+from django.urls import reverse_lazy
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+import cloudinary
+import cloudinary_storage
 
 
 load_dotenv()
@@ -10,9 +16,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+# DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['www.interniac.org',
+                 'www.interniac.herokuapp.com', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,16 +29,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'notifications',
     'phonenumber_field',
     'nocaptcha_recaptcha',
+    'defender',
     'accounts',
     'aboutus',
     'careers',
     'marketplace',
     'authentication',
     'home',
-    'applications'
+    'applications',
+    'interniac_admin'
 ]
 
 MIDDLEWARE = [
@@ -39,6 +51,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'defender.middleware.FailedLoginMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -48,8 +61,7 @@ ROOT_URLCONF = 'connect_x.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,6 +108,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_URL = reverse_lazy('login')
+
+DJANGO_NOTIFICATIONS_CONFIG = {'SOFT_DELETE': True}
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
@@ -104,8 +120,8 @@ EMAIL_HOST_USER = os.environ.get('EMAIL')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
 
-NORECAPTCHA_SITE_KEY = os.environ.get('NORECAPTCHA_SITE_KEY')
-NORECAPTCHA_SECRET_KEY = os.environ.get('NORECAPTCHA_SECRET_KEY')
+NORECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+NORECAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
@@ -119,4 +135,22 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-django_heroku.settings(locals())
+CLOUDINARY_STORAGE = {'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'), 'API_KEY': os.getenv(
+    'CLOUDINARY_API_KEY'), 'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'), }
+
+
+DEFENDER_LOGIN_FAILURE_LIMIT = 10
+DEFENDER_LOCKOUT_TEMPLATE = 'auth/login.html'
+
+if not DEBUG:
+    django_heroku.settings(locals())
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    DEFENDER_REDIS_URL = os.getenv('REDIS_URL')
+    NORECAPTCHA_SITE_KEY = os.environ.get('NORECAPTCHA_SITE_KEY')
+    NORECAPTCHA_SECRET_KEY = os.environ.get('NORECAPTCHA_SECRET_KEY')
+    sentry_sdk.init(
+        dsn=os.getenv('SENTRY_DNS'),
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+        send_default_pii=True
+    )

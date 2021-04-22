@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 
 from .forms import CreateListingForm, Filter
 from .models import Listing, Career
@@ -13,19 +14,35 @@ __all__ = ['Marketplace', 'CreateListing', 'FilterListings', 'ViewListing', 'del
 
 
 class Marketplace(LoginRequiredMixin, ListView):
-    login_url = 'login'
     model = Listing
     ordering = ['-posted']
     template_name = 'marketplace/marketplace.html'
+    paginate_by = 30
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['filters'] = Filter()
+
+        if not context.get('is_paginated', False):
+            return context
+
+        paginator = context.get('paginator')
+        num_pages = paginator.num_pages
+        current_page = context.get('page_obj')
+        page_no = current_page.number
+
+        if num_pages <= 15 or page_no <= 6:
+            pages = [x for x in range(1, min(num_pages + 1, 16))]
+        elif page_no > num_pages - 6:
+            pages = [x for x in range(num_pages - 14, num_pages + 1)]
+        else:
+            pages = [x for x in range(page_no - 5, page_no + 6)]
+
+        context.update({'pages': pages})
         return context
 
 
 class CreateListing(LoginRequiredMixin, CreateView):
-    login_url = 'login'
     template_name = 'marketplace/create-listing.html'
     form_class = CreateListingForm
 
@@ -46,6 +63,7 @@ class FilterListings(LoginRequiredMixin, ListView):
     template_name = 'marketplace/listings.html'
     model = Listing
     queryset = Listing.objects.all().order_by('-posted')
+    paginate_by = 30
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -53,15 +71,15 @@ class FilterListings(LoginRequiredMixin, ListView):
         params = self.request.GET
         if params.getlist('type'):
             for i in range(len(params.getlist('type'))):
-                query = query & Q(type__startswith=params.getlist('type')[i])
+                query = query & Q(type__istartswith=params.getlist('type')[i])
         if params.getlist('where'):
             for i in range(len(params.getlist('where'))):
-                query = query & Q(where__startswith=params.getlist('where')[i])
+                query = query & Q(where__istartswith=params.getlist('where')[i])
         if params.getlist('career'):
             for i in range(len(params.getlist('career'))):
                 query = query & Q(career_id=int(params.getlist('career')[i]))
         if params.get('search'):
-            query = query & Q(title__contains=params.get('search'))
+            query = query & Q(title__icontains=params.get('search')) | Q(description__icontains=params.get('search'))
         if params.get('company'):
             query = query & Q(company=params.get('company'))
 
@@ -75,11 +93,11 @@ class ViewListing(LoginRequiredMixin, DetailView):
     template_name = 'marketplace/single-listing.html'
 
 
-@login_required(login_url='login')
+@login_required
 def delete_listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
     if request.user != listing.company:
-        raise PermissionError
+        raise PermissionDenied
 
     listing.delete()
 
@@ -87,32 +105,26 @@ def delete_listing(request, listing_id):
 
 
 class EditListing(LoginRequiredMixin, UpdateView):
+    form_class = CreateListingForm
     model = Listing
     template_name = 'marketplace/edit-listing.html'
     success_url = reverse_lazy('listings')
 
-    fields = ['title', 'type', 'where', 'career', 'new_career', 'pay', 'time_commitment', 'location',
-              'application_deadline', 'description', 'application_url']
-
     def form_valid(self, form):
-        if form.cleaned_data['where'] == 'Virtual':
-            if form.cleaned_data['location'] is not '' and form.cleaned_data['location'] is not None:
-                form.cleaned_data['where'] = None
-                
-        if form.cleaned_data['type'] == 'Unpaid':
-            if form.cleaned_data['pay'] is not '' and form.cleaned_data['pay'] is not None:
-                form.cleaned_data['pay'] = None
         if form.cleaned_data['where'] == 'In-Person':
-            if form.cleaned_data['location'] is '' or form.cleaned_data['location'] is None:
-                form.add_error('where', 'In-person internship must have a location')
+            if form.cleaned_data['location'] == '' or form.cleaned_data['location'] is None:
+                form.add_error('location', 'Must have a location')
 
-        if form.cleaned_data['career'] is not None and form.cleaned_data['career'] is not '':
-            pass
-        elif form.cleaned_data['new_career'] is not None and form.cleaned_data['new_career'] is not '':
-            new_career, _ = Career.objects.get_or_create(career=form.cleaned_data['new_career'])
-            listing = form.save(commit=False)
-            listing.career = new_career
-            listing.save()
+        if form.cleaned_data['type'] == 'Paid':
+            if form.cleaned_data['pay'] == '' or form.cleaned_data['pay'] is None:
+                form.add_error('pay', 'Paid internship must have a salary')
+
+        if form.cleaned_data['career'] is None or form.cleaned_data['career'] == '':
+            if form.cleaned_data['new_career'] is not None and form.cleaned_data['new_career'] != '':
+                new_career, _ = Career.objects.get_or_create(career=form.cleaned_data['new_career'])
+                listing = form.save(commit=False)
+                listing.career = new_career
+                listing.save()
 
         if form.is_valid():
             return super(EditListing, self).form_valid(form)

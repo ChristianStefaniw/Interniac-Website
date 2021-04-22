@@ -1,16 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
 from django.views.generic import TemplateView
+from django.core.exceptions import PermissionDenied
 
-from careers.forms import CareerForm
-from .helpers import Student, Employer, save_career
+from .helpers import Student, Employer
 
 
 class Profile(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/profile.html'
-    login_url = reverse_lazy('login')
 
     def post(self, request, **kwargs):
         if 'hs' in request.POST:
@@ -24,9 +22,6 @@ class Profile(LoginRequiredMixin, TemplateView):
             if profile_form or user_form:
                 return super(Profile, self).render_to_response(self.get_context_data(profile_form=profile_form,
                                                                                      user_form=user_form))
-
-        elif 'content' in request.POST and (self.request.user.is_staff or self.request.user.is_superuser):
-            return save_career(request)
 
         return super(Profile, self).render_to_response(self.get_context_data())
 
@@ -52,23 +47,19 @@ class Profile(LoginRequiredMixin, TemplateView):
                 context['employer_profile_form'] = employer.employer_profile()
                 context['employer_user_form'] = employer.employer_user()
 
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            context['new_career'] = CareerForm()
-
         return context
 
 
 class Listings(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/employer/listings.html'
-    login_url = 'login'
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_employer:
-            raise PermissionError
+            raise PermissionDenied
         return super(Listings, self).get(request, args, kwargs)
 
 
-@login_required(login_url='login')
+@login_required
 def delete_user(request):
     request.user.delete()
     return redirect('login')

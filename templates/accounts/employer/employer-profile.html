@@ -12,13 +12,20 @@
                 <p>
                     {{ employer_user_form.profile_picture.label_tag }}
                     {{ employer_user_form.profile_picture }}
+                    {{ employer_user_form.profile_picture.errors }}
                 </p>
 
                 <div class="mt-4">
-                    <a class="danger-btn"
-                       href="{% url "delete" %}" onclick="return confirm('Are you sure?');">Delete account</a>
-                    <a class="neutral-btn float-right"
-                       href="{% url 'logout' %}?next=/">Logout</a>
+                    <div class="row justify-content-between">
+                        <div class="col-xl-7">
+                            <a class="danger-cta-btn  mat-btn"
+                            href="{% url "delete" %}" onclick="return confirm('Are you sure?');">Delete account</a>
+                        </div>
+                        <div class="col-xl-4 mtb-xl">
+                            <a class="neutral-cta-btn  mat-btn"
+                            href="{% url 'logout' %}?next=/">Logout</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-8">
@@ -27,6 +34,7 @@
                 <p>
                     {{ employer_profile_form.company_name.label_tag }}
                     {{ employer_profile_form.company_name }}
+                    {{ employer_user_form.company.errors }}
                 </p>
 
                 <div class="row">
@@ -34,6 +42,7 @@
                         <p>
                             {{ employer_user_form.first_name.label_tag }}
                             {{ employer_user_form.first_name }}
+                            {{ employer_user_form.first_name.errors }}
                         </p>
 
                     </div>
@@ -41,6 +50,7 @@
                         <p>
                             {{ employer_user_form.last_name.label_tag }}
                             {{ employer_user_form.last_name }}
+                            {{ employer_user_form.last_name.errors }}
                         </p>
 
                     </div>
@@ -49,6 +59,7 @@
                     <p>
                         {{ employer_user_form.email.label_tag }}
                         {{ employer_user_form.email }}
+                        {{ employer_user_form.email.errors }}
                     </p>
 
                 </div>
@@ -56,26 +67,30 @@
                     <p>
                         {{ employer_profile_form.company_website.label_tag }}
                         {{ employer_profile_form.company_website }}
+                        {{ employer_user_form.company_website.errors }}
                     </p>
 
                 </div>
                 <button class="btn btn-primary w-100 save-btn" type="submit">Save</button>
 
-                <div class="row text-center mt-5 mb-5">
-                    <div class="col-lg-2 mb-4">
-                        <a class="neutral-btn w-100" href="{% url 'applications' %}">View applications</a>
-                    </div>
-                    <div class="col-lg-2 mb-4">
-                        <a class="success-btn w-100" href="{% url 'acceptances' %}">View acceptances</a>
-                    </div>
-                    <div class="col-lg-2 mb-4">
-                        <a class="danger-btn w-100" href="{% url 'rejections' %}">View rejections</a>
+                <div class="row text-center justify-content-around mt-5 mb-5">
+                    <div class="col-lg-4 mb-4">
+                        <a class="neutral-cta-btn  mat-btn w-100" href="{% url 'applications' %}">View Applications</a>
                     </div>
                     <div class="col-lg-4 mb-4">
-                        <a class="neutral-btn w-100" href="{% url 'interview_requests' %}">View interview requests</a>
+                        <a class="success-cta-btn mat-btn w-100" href="{% url 'acceptances' %}">View Acceptances</a>
                     </div>
-                    <div class="col-lg-2 mb-4">
-                        <a class="success-btn w-100" href="{% url 'listings' %}">View Listings</a>
+                    <div class="col-lg-4 mb-4">
+                        <a class="danger-cta-btn  mat-btn w-100" href="{% url 'rejections' %}">View Rejections</a>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <a class="neutral-cta-btn  mat-btn w-100" href="{% url 'interview_requests' %}">View Interview Requests</a>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <a class="success-cta-btn  mat-btn w-100" href="{% url 'awaiting_confirm' %}">Awaiting Confirmation</a>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <a class="neutral-cta-btn  mat-btn w-100" href="{% url 'listings' %}">View Listings</a>
                     </div>
                 </div>
             </div>

@@ -4,7 +4,6 @@ from django_unique_slugify import unique_slugify
 
 from marketplace.models import Listing
 
-
 @receiver(post_save, sender=Listing)
 def slugify(sender, instance, created, **kwargs):
     if created:

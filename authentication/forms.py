@@ -1,7 +1,11 @@
+from nocaptcha_recaptcha import NoReCaptchaField
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from accounts.models import User
+from helpers.profile_img_validation import validate_profile_img
 
 CHOICES = [('student', 'Student'),
            ('employer', 'Employer')]
@@ -13,6 +17,7 @@ class UserCreateForm(UserCreationForm):
     student_employer = forms.ChoiceField(choices=CHOICES,
                                          widget=forms.RadioSelect,
                                          label='Student or employer')
+    captcha = NoReCaptchaField(label='', required=False)
 
     class Meta:
         model = User
@@ -33,12 +38,18 @@ class UserCreateForm(UserCreationForm):
             user.employer_profile.save()
         return user
 
+    def clean_profile_picture(self):
+        pic = self.cleaned_data['profile_picture']
+        if type(pic) is InMemoryUploadedFile:
+            return validate_profile_img(pic)
+        return pic
+
     def clean(self):
         cleaned_data = super(UserCreateForm, self).clean()
         if self.cleaned_data.get('student_employer') == 'employer' and not self.cleaned_data.get('company_name'):
             self.add_error('company_name', 'Enter your companies name')
         if self.cleaned_data.get('student_employer') == 'student' and self.cleaned_data.get('company_name') != '':
-            self.add_error('is_student', 'Student can\'t have a company')
+            self.add_error('student_employer', 'Student can\'t have a company')
         return cleaned_data
 
     def __init__(self, *args, **kwargs):

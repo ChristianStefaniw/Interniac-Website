@@ -1,5 +1,7 @@
 {% load static %}
 
+<!-- TODO SEO optimization -->
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -16,8 +18,6 @@
 
 
         <script src="https://kit.fontawesome.com/a76f8913d2.js" crossorigin="anonymous"></script>
-
-
 
         <title>Interniac</title>
 
@@ -61,7 +61,7 @@
                 </div>
             </nav>
         </section>
-
+        
         <div class="landing-padding home-container">
             <section id="landing">
                 <div class="row">
@@ -162,7 +162,7 @@
                             </div>
                         </div>
                     {% empty %}
-                        <h4 class="m-auto text-muted">There are no upcoming events at this time :(</h4>
+                        <h4 class="m-auto text-muted">There are no upcoming events at this time</h4>
                     {% endfor %}
                     </div>
             </section>
@@ -209,7 +209,6 @@
                     <img width="7%" class="position-absolute send-back spin-counter"
                  src="{% static 'assets/decorations/blob-bg-primary.svg' %}" alt=""/>
                 </div>
-
                 <div class="row justify-content-between">
                     <div class="col-md-4">
                         <form method="post" id="contact">

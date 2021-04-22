@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from defender.test import DefenderTestCaseMixin
 
 from django.test import TestCase
 from django.urls import reverse
@@ -6,7 +7,7 @@ from django.urls import reverse
 from accounts.models import User, StudentProfile, EmployerProfile
 
 
-class AuthenticationTestCase(TestCase):
+class AuthenticationTestCase(TestCase, DefenderTestCaseMixin):
 
     @staticmethod
     def student_registration_data():
@@ -16,8 +17,7 @@ class AuthenticationTestCase(TestCase):
             'last_name': 'student_last',
             'password1': 'some_password',
             'password2': 'some_password',
-            'is_student': True,
-            'is_employer': False
+            'student_employer': 'student'
         }
 
     @staticmethod
@@ -28,10 +28,12 @@ class AuthenticationTestCase(TestCase):
             'last_name': 'teacher_last',
             'password1': 'some_password',
             'password2': 'some_password',
-            'is_student': False,
-            'is_employer': True,
+            'student_employer': 'employer',
             'company_name': 'some company'
         }
+
+    def tearDown(self):
+        super().tearDown()
 
     def register(self, data):
         return self.client.post(
@@ -41,7 +43,6 @@ class AuthenticationTestCase(TestCase):
     def all_login_tests(self, data):
         login_data = {'username': data['email'], 'password': data['password2']}
         response = self.client.post(reverse('login'), data=login_data, follow=True)
-
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.request['PATH_INFO'], reverse('profile'))
         self.client.logout()
@@ -85,7 +86,6 @@ class AuthenticationTestCase(TestCase):
 
         self.register(registration_data)
         response = self.register(registration_data)
-
         self.assertTrue(response.context['form'].errors['email'])
 
     def test_register_student_has_company(self):
@@ -94,7 +94,7 @@ class AuthenticationTestCase(TestCase):
 
         response = self.register(registration_data)
 
-        self.assertTrue(response.context['form'].errors['is_student'])
+        self.assertTrue(response.context['form'].errors['student_employer'])
 
     def test_register_employer_no_company(self):
         registration_data = self.employer_registration_data()
@@ -106,11 +106,11 @@ class AuthenticationTestCase(TestCase):
 
     def test_register_not_employer_not_student(self):
         registration_data = self.student_registration_data()
-        registration_data['is_student'], registration_data['is_employer'] = False, False
+        registration_data['student_employer'] = ''
 
         response = self.register(registration_data)
 
-        self.assertTrue(response.context['form'].errors['is_student'])
+        self.assertTrue(response.context['form'].errors['student_employer'])
 
     def test_register_employer_register(self):
         registration_data = self.employer_registration_data()

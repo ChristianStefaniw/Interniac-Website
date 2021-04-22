@@ -14,6 +14,7 @@ from marketplace import urls as marketplace_urls
 from applications import urls as application_urls
 from careers import urls as careers_urls
 from aboutus import urls as aboutus_urls
+from interniac_admin import urls as interniac_admin_urls
 
 urlpatterns = [
     path('', include(home_urls)),
@@ -22,12 +23,14 @@ urlpatterns = [
     path('aboutus/', include(aboutus_urls)),
     path('success/', success, name='success'),
     path('error/', error, name='error'),
-    path('admin/', admin.site.urls),
+    path('management/', admin.site.urls),
+    path('management/defender/', include('defender.urls')),
+    path('interniacadmin/', include(interniac_admin_urls)),
     path('accounts/', include(accounts_urls)),
     path('auth/', include(auth_urls)),
     path('marketplace/', include(marketplace_urls)),
     path('applications/', include(application_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-handler500 = 'connect_x.views.Error404Handler'
-
+handler500 = 'connect_x.views.error_500'
+handler404 = 'connect_x.views.error_404'

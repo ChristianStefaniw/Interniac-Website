@@ -1,13 +1,12 @@
-from notifications.signals import notify
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
 from django_unique_slugify import unique_slugify
 from phonenumber_field.modelfields import PhoneNumberField
+from cloudinary.models import CloudinaryField
 
 from accounts.managers import UserManager
-from marketplace.models import Listing
-
+from connect_x.settings import DEBUG
 
 class User(AbstractUser):
     USERNAME_FIELD = 'email'
@@ -16,8 +15,11 @@ class User(AbstractUser):
 
     username = models.CharField(max_length=256, unique=False, blank=True)
     email = models.EmailField(max_length=256, unique=True, blank=False)
-    profile_picture = models.ImageField(upload_to='profile_pictures', default='profile_pictures/default.png',
+    if DEBUG:
+        profile_picture = models.ImageField(upload_to='profile_pictures', default='profile_pictures/default.png',
                                         null=True, blank=True)
+    else:
+        profile_picture = CloudinaryField('Profile picture', default='default_aze1tf.png')
     is_student = models.BooleanField(default=False)
     is_employer = models.BooleanField(default=False)
     slug = models.SlugField(max_length=256, unique=False, blank=True)
@@ -41,31 +43,6 @@ class User(AbstractUser):
     def get_profile_pic_url(self):
         return self.profile_picture.url
 
-    def summarize(self):
-        data = {
-            'email': self.email,
-            'profile picture': self.get_profile_pic_url,
-            'is student': self.is_student,
-            'is employer': self.is_employer,
-            'slug': self.slug,
-            'dob': self.profile.dob,
-            'high school': self.profile.hs,
-            'high school address': self.profile.hs_addy,
-            'teacher or counselor email': self.profile.teacher_or_counselor_email,
-            'teacher or counselor name': self.profile.teacher_or_counselor_name,
-            'awards and achievements': self.profile.awards_achievements,
-            'work experience': self.profile.work_exp,
-            'volunteer experience': self.profile.volunteering_exp,
-            'extracurriculars': self.profile.extracurriculars,
-            'skills': self.profile.skills,
-            'leadership roles': self.profile.leadership_roles,
-            'link 1': self.profile.link1,
-            'link 2': self.profile.link2,
-            'link 3': self.profile.link3,
-            'link 4': self.profile.link4
-        }
-        return data
-
     def __str__(self):
         if self.is_employer:
             if self.employer_profile.company_name is not None:
@@ -78,20 +55,17 @@ class User(AbstractUser):
 
 class EmployerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='employer_profile')
-    company_name = models.CharField(max_length=30, unique=False, blank=True)
+    company_name = models.CharField(max_length=30, unique=False, blank=False)
     company_website = models.URLField(blank=True)
 
-    def archive_interview_request(self, listing_id, user_id):
-        listing = Listing.objects.get(id=listing_id)
-        listing.employer_interview_requests.remove(User.objects.get(id=user_id))
+    def archive_interview_request(self, listing, user):
+        listing.employer_interview_requests.remove(user)
 
-    def archive_acceptance(self, listing_id, user_id):
-        listing = Listing.objects.get(id=listing_id)
-        listing.employer_acceptances.remove(User.objects.get(id=user_id))
+    def archive_acceptance(self, listing, user):
+        listing.employer_acceptances.remove(user)
 
-    def archive_rejection(self, listing_id, user_id):
-        listing = Listing.objects.get(id=listing_id)
-        listing.employer_rejections.remove(User.objects.get(id=user_id))
+    def archive_rejection(self, listing, user):
+        listing.employer_rejections.remove(user)
 
     def __str__(self):
         return self.company_name
@@ -101,10 +75,10 @@ class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='profile')
     phone = PhoneNumberField(blank=True, null=True, unique=True)
     dob = models.DateField(null=True, blank=True)
-    hs = models.CharField(max_length=20, null=True, blank=True)
-    hs_addy = models.CharField(max_length=20, null=True, blank=True)
+    hs = models.CharField(max_length=40, null=True, blank=True)
+    hs_addy = models.CharField(max_length=40, null=True, blank=True)
     teacher_or_counselor_email = models.EmailField(null=True, blank=True)
-    teacher_or_counselor_name = models.CharField(max_length=30, null=True, blank=True)
+    teacher_or_counselor_name = models.CharField(max_length=40, null=True, blank=True)
     awards_achievements = models.TextField(null=True, blank=True)
     work_exp = models.TextField(null=True, blank=True)
     volunteering_exp = models.TextField(null=True, blank=True)
@@ -116,35 +90,39 @@ class StudentProfile(models.Model):
     link3 = models.URLField(null=True, blank=True)
     link4 = models.URLField(null=True, blank=True)
 
-    def archive_interview_request(self, listing_id):
-        listing = Listing.objects.get(id=listing_id)
-        self.user.student_interview_requests.remove(listing)
+    def archive_interview_request(self, listing):
+        listing.archive_interview_request(self.user)
 
-    def archive_acceptance(self, listing_id):
-        listing = Listing.objects.get(id=listing_id)
-        self.user.student_acceptances.remove(listing)
+    def archive_acceptance(self, listing):
+        listing.archive_student_acceptance(self.user)
 
-    def archive_rejection(self, listing_id):
-        listing = Listing.objects.get(id=listing_id)
-        self.user.student_rejections.remove(listing)
+    def archive_rejection(self, listing):
+        listing.archive_student_rejection(self.user)
 
-    def apply(self, listing_id):
-        listing = Listing.objects.get(id=listing_id)
-        listing.applications.add(self.user)
-        listing.applied_email(self.user.first_name)
-        if listing.company.notifications.unread().filter(actor_object_id=listing.id).count() != 0:
-            return
-        notify.send(recipient=listing.company, verb='someone applied!', actor=listing, sender=listing)
-
-    def unapply(self, listing_id):
-        listing = Listing.objects.get(id=listing_id)
-        listing.applications.remove(self.user)
-        if self.user in listing.interview_requests.all():
-            listing.interview_requests.remove(self.user)
-        if self.user in listing.student_interview_requests.all():
-            listing.student_interview_requests.remove(self.user)
-        if self.user in listing.employer_interview_requests.all():
-            listing.employer_interview_requests.remove(self.user)
+    def summarize(self):
+        data = {
+            'email': self.user.email,
+            'profile picture': self.user.get_profile_pic_url,
+            'is student': self.user.is_student,
+            'is employer': self.user.is_employer,
+            'slug': self.user.slug,
+            'dob': self.dob,
+            'high school': self.hs,
+            'high school address': self.hs_addy,
+            'teacher or counselor email': self.teacher_or_counselor_email,
+            'teacher or counselor name': self.teacher_or_counselor_name,
+            'awards and achievements': self.awards_achievements,
+            'work experience': self.work_exp,
+            'volunteer experience': self.volunteering_exp,
+            'extracurriculars': self.extracurriculars,
+            'skills': self.skills,
+            'leadership roles': self.leadership_roles,
+            'link 1': self.link1,
+            'link 2': self.link2,
+            'link 3': self.link3,
+            'link 4': self.link4
+        }
+        return data
 
     def __str__(self):
         return f"{self.user.first_name}'s profile"

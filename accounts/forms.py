@@ -1,7 +1,8 @@
 from django import forms
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from .models import StudentProfile, User, EmployerProfile
-
+from helpers.profile_img_validation import validate_profile_img
 
 class StudentProfileForm(forms.ModelForm):
     class Meta:
@@ -34,6 +35,12 @@ class StudentUserForm(forms.ModelForm):
         }
         fields = ['email', 'profile_picture', 'first_name', 'last_name']
 
+    def clean_profile_picture(self):
+        pic = self.cleaned_data['profile_picture']
+        if type(pic) is InMemoryUploadedFile:
+            return validate_profile_img(pic)
+        return pic
+
 
 class EmployerProfileForm(forms.ModelForm):
     class Meta:
@@ -48,3 +55,9 @@ class EmployerUserForm(forms.ModelForm):
             'profile_picture': forms.FileInput
         }
         fields = ['email', 'profile_picture', 'first_name', 'last_name']
+
+    def clean_profile_picture(self):
+        pic = self.cleaned_data['profile_picture']
+        if type(pic) is InMemoryUploadedFile:
+            return validate_profile_img(pic)
+        return pic
