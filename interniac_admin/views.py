@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.views.generic import CreateView, ListView, DetailView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
@@ -9,6 +8,7 @@ from careers.models import Career
 from accounts.models import User
 from decorators.admin_required import admin_required
 
+from helpers.paginate import paginate
 
 class CareerInfoFormView(AdminRequiredMixin, CreateView):
     template_name = 'interniac-admin/new-career.html'
@@ -27,17 +27,7 @@ class AllUsers(AdminRequiredMixin, ListView):
         if not context.get('is_paginated', False):
             return context
 
-        paginator = context.get('paginator')
-        num_pages = paginator.num_pages
-        current_page = context.get('page_obj')
-        page_no = current_page.number
-
-        if num_pages <= 15 or page_no <= 6:
-            pages = [x for x in range(1, min(num_pages + 1, 16))]
-        elif page_no > num_pages - 6:
-            pages = [x for x in range(num_pages - 14, num_pages + 1)]
-        else:
-            pages = [x for x in range(page_no - 5, page_no + 6)]
+        pages = paginate(context)
 
         context.update({'pages': pages})
         return context

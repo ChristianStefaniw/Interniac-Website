@@ -7,8 +7,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from mixins.init_accounts import InitAccountsMixin
 from .models import *
 
+"""
+Tests for the accounts application
+"""
 
 class UserTestCase(TestCase, InitAccountsMixin):
+    """
+    I probably won't get to documenting tests anytime soon tbh.  
+    The method names are pretty self explanatory. 
+    """
 
     @classmethod
     def setUpTestData(cls):
@@ -40,13 +47,25 @@ class UserTestCase(TestCase, InitAccountsMixin):
                           is_student=True, is_employer=False)
         self.assertEqual(256, User._meta.get_field('email').max_length)
 
-    def test_slug(self):
-        new_student = User.objects.create_user(email='email@gmail.com', first_name='first', last_name='last',
+    def test_slug_student(self):
+        new_student = User.objects.create_user(email='email@gmail.com', first_name='name first', last_name='name last',
                                                password='password',
                                                is_student=True, is_employer=False)
         super(UserTestCase, self).student_profile(new_student.id, '+12125552369')
-        new_student.slug_student()
+        new_student.profile.slug_student()
         self.assertNotEqual(self.student.slug, new_student.slug)
+        self.assertEqual(new_student.slug, 'name-first-name-last')
+        self.assertEqual(256, User._meta.get_field('slug').max_length)
+
+    def test_slug_employer(self):
+        new_employer = User.objects.create_user(email='email@gmail.com', first_name='first', last_name='last',
+                                               password='password',
+                                               is_student=False, is_employer=True)
+        new_employer.employer_profile.company_name = 'company'
+        new_employer.save()
+        new_employer.employer_profile.slug_employer()
+        self.assertNotEqual(self.employer.slug, new_employer.slug)
+        self.assertEqual(new_employer.slug, 'company')
         self.assertEqual(256, User._meta.get_field('slug').max_length)
 
     def test_existing_email(self):
@@ -118,7 +137,7 @@ class UserTestCase(TestCase, InitAccountsMixin):
 
     def test_employer_company_name(self):
         self.assertEqual(self.employer.employer_profile.company_name, 'some company')
-        self.assertEqual(30, EmployerProfile._meta.get_field('company_name').max_length)
+        self.assertEqual(50, EmployerProfile._meta.get_field('company_name').max_length)
 
     def test_employer_profile_attached(self):
         self.assertTrue(self.employer.employer_profile)
@@ -195,7 +214,7 @@ class UserTestCase(TestCase, InitAccountsMixin):
 
     def test_student_teacher_or_counselor_name(self):
         self.assertEqual(self.student.profile.teacher_or_counselor_name, 'teacher teacher')
-        self.assertEqual(40, StudentProfile._meta.get_field('teacher_or_counselor_name').max_length)
+        self.assertEqual(100, StudentProfile._meta.get_field('teacher_or_counselor_name').max_length)
         self.assertEqual(True, StudentProfile._meta.get_field('teacher_or_counselor_name').null)
         self.assertEqual(True, StudentProfile._meta.get_field('teacher_or_counselor_name').blank)
 
@@ -210,13 +229,13 @@ class UserTestCase(TestCase, InitAccountsMixin):
 
     def test_student_hs_addy(self):
         self.assertEqual(self.student.profile.hs_addy, '123 random st')
-        self.assertEqual(40, StudentProfile._meta.get_field('hs_addy').max_length)
+        self.assertEqual(100, StudentProfile._meta.get_field('hs_addy').max_length)
         self.assertEqual(True, StudentProfile._meta.get_field('hs_addy').null)
         self.assertEqual(True, StudentProfile._meta.get_field('hs_addy').blank)
 
     def test_student_hs(self):
         self.assertEqual(self.student.profile.hs, 'humberside')
-        self.assertEqual(40, StudentProfile._meta.get_field('hs').max_length)
+        self.assertEqual(100, StudentProfile._meta.get_field('hs').max_length)
         self.assertEqual(True, StudentProfile._meta.get_field('hs').null)
         self.assertEqual(True, StudentProfile._meta.get_field('hs').blank)
 

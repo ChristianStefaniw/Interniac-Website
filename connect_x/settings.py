@@ -1,14 +1,10 @@
 from pathlib import Path
 import os
-import sys
 from dotenv import load_dotenv
 import django_heroku
 from django.urls import reverse_lazy
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-import cloudinary
-import cloudinary_storage
-
 
 load_dotenv()
 
@@ -18,6 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # DEBUG = True
 DEBUG = False
+
 
 ALLOWED_HOSTS = ['www.interniac.org',
                  'www.interniac.herokuapp.com', '127.0.0.1']
@@ -119,10 +116,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
-
-NORECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
-NORECAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
@@ -154,3 +147,6 @@ if not DEBUG:
         traces_sample_rate=1.0,
         send_default_pii=True
     )
+else:
+    NORECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+    NORECAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
