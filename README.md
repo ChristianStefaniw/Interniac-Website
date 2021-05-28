@@ -12,8 +12,15 @@
         <a href="https://github.com/Interniac/interniac-website/graphs/commit-activity">
             <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="yes" />
         </a>
-        <a href="https://snyk.io/test/github/interniac/interniac-website">
-            <img src="https://snyk.io/test/github/interniac/interniac-website/badge.svg" alt="0">
-        </a>
     </a>
 </div>
+
+<div align="center">
+    <a href="https://codecov.io/gh/Interniac/interniac-website">
+        <img src="https://codecov.io/gh/Interniac/interniac-website/branch/master/graph/badge.svg?token=AN189HSGXH"/>
+    </a>
+    <a href="https://travis-ci.com/Interniac/interniac-website.svg?branch=master">
+        <img src="https://travis-ci.com/Interniac/interniac-website.svg?branch=master" />
+    </a>
+</div>
+
